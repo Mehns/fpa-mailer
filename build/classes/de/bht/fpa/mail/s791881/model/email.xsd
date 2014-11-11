@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<xsd:element name="email">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element name="read" type="xsd:boolean" />
+			<xsd:element name="received" type="xsd:string" />
+			<xsd:element name="receiverBCC" type="xsd:string" />
+			<xsd:element name="receiverCC" type="xsd:string" />
+			<xsd:element name="receiverTo" type="xsd:string" />
+			<xsd:element name="sender" type="xsd:string" />
+			<xsd:element name="sent" type="xsd:string" />
+			<xsd:element name="subject" type="xsd:string" />
+			<xsd:element name="text" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

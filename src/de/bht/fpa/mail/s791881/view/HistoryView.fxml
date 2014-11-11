@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="260.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ListView fx:id="dialogListView" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="380.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <Button fx:id="dialogButtonCancel" layoutX="286.0" layoutY="224.0" mnemonicParsing="false" text="Cancel" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="50.0" />
+      <Button fx:id="dialogButtonOK" layoutX="353.0" layoutY="224.0" mnemonicParsing="false" text="OK" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+   </children>
+</AnchorPane>
