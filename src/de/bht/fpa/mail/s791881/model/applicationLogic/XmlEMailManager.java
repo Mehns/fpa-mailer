@@ -15,16 +15,17 @@ import javax.xml.validation.Validator;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * This is the class that manages Emails in XML format
+ * 
  * @author Christian Mehns
  */
 public class XmlEMailManager implements EmailManagerIF{
     
     private final FilenameFilter xmlFilter = new XMLFilter();
-    private final File SCHEMA_LOCATION = new File("K:\\MedienInformatik\\FPA\\Workspace\\FPA Mailer\\src\\de\\bht\\fpa\\mail\\s791881\\model\\email.xsd");
+    private final File SCHEMA_LOCATION = new File("src/de/bht/fpa/mail/s791881/model/data/email.xsd");
 
     @Override
-    public void loadContent(Folder f) {   
+    public void loadEmails(Folder f) {   
         /* if folder has no Email-objects yet, 
             then check if folder contains any files, read all the xml-files */     
         if (f.getEmails().isEmpty()) {
@@ -44,10 +45,22 @@ public class XmlEMailManager implements EmailManagerIF{
         }    
     }
     
-    public Email readMail(File file) {
+    /**
+     * Reads an email as File and converts it to an Email object
+     * 
+     * @param file represents the email
+     * @return Email object
+     */
+    private Email readMail(File file) {
         return JAXB.unmarshal(file, Email.class);
     }
     
+    /**
+     * Method checks if the xml file is in the right format to convert into 
+     * an Email object
+     * @param file xml file that should be checked
+     * @return boolean wheter file is valid or not
+     */
     private boolean isValid(File file) {
         
         // Lookup a factory for the W3C XML Schema language
@@ -76,7 +89,5 @@ public class XmlEMailManager implements EmailManagerIF{
         catch (SAXException ex) {
             return false;
         } 
-    }
-    
-    
+    } 
 }
