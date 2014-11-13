@@ -1,6 +1,6 @@
-package de.bht.fpa.mail.s791881.applicationLogic;
+package de.bht.fpa.mail.s791881.model.applicationLogic;
 
-import de.bht.fpa.mail.s791881.model.Folder;
+import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
 
 

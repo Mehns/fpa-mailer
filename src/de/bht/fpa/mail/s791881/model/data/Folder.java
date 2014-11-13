@@ -1,4 +1,4 @@
-package de.bht.fpa.mail.s791881.model;
+package de.bht.fpa.mail.s791881.model.data;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,13 +1,13 @@
 
 package de.bht.fpa.mail.s791881.controller;
 
-import de.bht.fpa.mail.s791881.applicationLogic.EmailManagerIF;
-import de.bht.fpa.mail.s791881.applicationLogic.FileManager;
-import de.bht.fpa.mail.s791881.applicationLogic.FolderManagerIF;
-import de.bht.fpa.mail.s791881.applicationLogic.XmlEMailManager;
-import de.bht.fpa.mail.s791881.model.Folder;
-import de.bht.fpa.mail.s791881.model.Component;
-import de.bht.fpa.mail.s791881.model.Email;
+import de.bht.fpa.mail.s791881.model.applicationLogic.EmailManagerIF;
+import de.bht.fpa.mail.s791881.model.applicationLogic.FileManager;
+import de.bht.fpa.mail.s791881.model.applicationLogic.FolderManagerIF;
+import de.bht.fpa.mail.s791881.model.applicationLogic.XmlEMailManager;
+import de.bht.fpa.mail.s791881.model.data.Folder;
+import de.bht.fpa.mail.s791881.model.data.Component;
+import de.bht.fpa.mail.s791881.model.data.Email;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
