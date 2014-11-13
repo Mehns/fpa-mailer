@@ -28,8 +28,9 @@ public class HistoryViewController implements Initializable {
     private Button dialogButtonOK;
     
     MainViewController mainViewController;
-              
-    ObservableList noEntry = FXCollections.observableArrayList();
+     
+    // no-Entry text
+    private final ObservableList noEntry;
     Stage stage; 
     
 
@@ -37,6 +38,7 @@ public class HistoryViewController implements Initializable {
     
     public HistoryViewController(MainViewController mainViewController) {  
         this.mainViewController = mainViewController;
+        noEntry = FXCollections.observableArrayList();
     }
     
     
@@ -51,7 +53,8 @@ public class HistoryViewController implements Initializable {
         // set EventHandler
         dialogButtonOK.setOnAction(event  -> getSelection());
         dialogButtonCancel.setOnAction(event -> closeWindow());
-
+        
+        // write no-entry text if there's no path history
         if (historyList.isEmpty()) {            
             noEntry.add("No base directories in history");
             dialogListView.setItems(noEntry);            
@@ -65,6 +68,9 @@ public class HistoryViewController implements Initializable {
     
     /* =================== EventHandler ================ */   
     
+    /**
+     * Get selesction of choosen path and sets it as new root directory
+     */
     private void getSelection(){
         // get selected file and set it as root in the mainView
         File selectedFile = (File) dialogListView.getSelectionModel().getSelectedItem();
@@ -72,6 +78,9 @@ public class HistoryViewController implements Initializable {
         closeWindow();
     }
     
+    /**
+     * closes the dialog window
+     */
     private void closeWindow(){
         // close window
         stage = (Stage) dialogListView.getScene().getWindow();

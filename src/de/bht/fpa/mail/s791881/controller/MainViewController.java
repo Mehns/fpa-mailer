@@ -33,7 +33,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- *
+ * Controller for main application
  * @author Christian Mehns
  */
 public class MainViewController implements Initializable {
@@ -54,11 +54,11 @@ public class MainViewController implements Initializable {
     
     /* =================== Other Variables ================ */
     
-    private final String ROOT_PATH = "K:\\MedienInformatik\\FPA\\Workspace\\FPA Mailer\\Account";
+    private final String ROOT_PATH = "../FPA Mailer/Account";
 
     // Icons
-    private final Image ICON_FOLDER_COLLAPSED = new Image(getClass().getResourceAsStream("folder-horizontal.png"));
-    private final Image ICON_FOLDER_OPEN = new Image(getClass().getResourceAsStream("folder-horizontal-open.png"));
+    private final Image ICON_FOLDER_COLLAPSED;
+    private final Image ICON_FOLDER_OPEN;
     
     // list of previously choosen paths
     private final ObservableList<File> historyList = FXCollections.observableArrayList();    
@@ -70,6 +70,8 @@ public class MainViewController implements Initializable {
     /* =================== Constructor ================ */
     
     public MainViewController(){
+        ICON_FOLDER_COLLAPSED = new Image(getClass().getResourceAsStream("folder-horizontal.png"));
+        ICON_FOLDER_OPEN = new Image(getClass().getResourceAsStream("folder-horizontal-open.png"));
         emailManager = new XmlEMailManager();
     }
     
@@ -86,7 +88,9 @@ public class MainViewController implements Initializable {
 
     /* =================== Configuration Methods ================ */
     
-    
+    /**
+     * Initiate TreeView and sets handler for selected item
+     */
     private void configureTree(){  
         
         setRoot(new File(ROOT_PATH));
@@ -96,7 +100,12 @@ public class MainViewController implements Initializable {
                 (ChangeListener) (obsValue, oldState, newState) -> changeSelection(newState) );
     }
     
-    private void configureMenue(){    
+    /**
+     * Iniate Menu and sets handler for menu items
+     */
+    private void configureMenue(){  
+        
+        // sets handler for menu items
         menuOpen.setOnAction((ActionEvent event) -> handleMenu(event));
         menuHistory.setOnAction((ActionEvent event) -> handleMenu(event));
     }
@@ -104,7 +113,11 @@ public class MainViewController implements Initializable {
     
     
     /* =================== Methods ================ */
-    
+
+    /**
+     * Sets the root directory of the explorer and adds event handler
+     * @param root
+     */
     public void setRoot(File root){     
         folderManager = new FileManager(root);       
         
@@ -119,8 +132,11 @@ public class MainViewController implements Initializable {
         rootItem.setExpanded(true);        
     }
         
-    // reads all components from the given TreeItem and creates their TreeItems
-    // and adds them to the given one
+    /**
+     * Reads all components from the given TreeItem and creates their TreeItems
+     * and adds them to the given one
+     * @param treeItem Item which content should be shown
+     */
     private void showFolders(TreeItem<Component> treeItem){
        
         List<Component> componentContent = treeItem.getValue().getComponents();        
@@ -139,6 +155,10 @@ public class MainViewController implements Initializable {
         }      
     }
         
+    /**
+     * Get the history of previously selected paths
+     * @return lsit of previously selected paths
+     */
     public ObservableList<File> getHistoryList(){
         return historyList;
     }
@@ -149,14 +169,21 @@ public class MainViewController implements Initializable {
     /* =================== Methods for Event-Handling ================ */
     
     
-    // handles selection of a treeItem
+    
+    
+    /**
+     * Handles selection of a treeItem
+     * @param newState New Selected item
+     */
     private void changeSelection(Object newState){
-        TreeItem<Component> selectedItem = (TreeItem<Component>) newState;        
         
+        // get new selected Treeitem and it's folder
+        TreeItem<Component> selectedItem = (TreeItem<Component>) newState;      
         Folder folder = (Folder) selectedItem.getValue();  
-                        
+         
+        // prints Email content
         System.out.println("\nSelected Directory: " + folder.getPath());
-        emailManager.loadContent(folder);
+        emailManager.loadEmails(folder);
         int numberOfEmails = folder.getEmails().size();
         System.out.println("Number of emails: " + numberOfEmails);
         if (numberOfEmails > 0) {
@@ -168,28 +195,53 @@ public class MainViewController implements Initializable {
         }     
     }
     
-    // handles expansion of a treeItem
+    
+    
+    /**
+     * Handles expansion of a treeItem
+     * @param event Fired event from tree Item
+     */
     private void expandItem(Event event){
+        
+        // get treeItem that fired event and it's component
         TreeItem<Component> item = (TreeItem<Component>)event.getSource();
         Folder folder = (Folder) item.getValue();
         Component component = item.getValue();
-        item.setGraphic(new ImageView(ICON_FOLDER_OPEN));
+                
+        // load content of Component if hasen't done yet
         if(component.getComponents().isEmpty()){
             folderManager.loadContent(folder);
             showFolders(item); 
         }
+        
+        // change icon of treeItem
+        item.setGraphic(new ImageView(ICON_FOLDER_OPEN));
     }
     
-    // handles collapse of a treeItem
+    
+    
+    /**
+     * Handles collapse of a treeItem
+     * @param event Fired event from tree Item
+     */
     private void collapseItem(Event event){
+        
+        // change icon of treeItem
         ((TreeItem)event.getSource()).setGraphic(new ImageView(ICON_FOLDER_COLLAPSED));
     }
     
     
     
-    // handles all menu items
+    /**
+     * Handles all menu items
+     * 
+     * @param event Fired event from menu
+     */
     private void handleMenu(ActionEvent event){
-        MenuItem source = (MenuItem)event.getSource();        
+        // get source of event
+        MenuItem source = (MenuItem)event.getSource();  
+        
+        // call method depending on selected menu item
         if (source == menuOpen) {
             choosePathView();        
         }        
@@ -199,32 +251,47 @@ public class MainViewController implements Initializable {
     }
     
     
-    // opens dialog for choosing another directory as root
+    /**
+     * Opens dialog for choosing another directory to be the root directory
+     */
     private void choosePathView(){
+        
+        // create Directory chooser
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Open Basic Directory");
+        
+        // set current directory as inital directory of chooser
         File currentDirectory = new File(folderManager.getTopFolder().getPath());
         chooser.setInitialDirectory(currentDirectory);
 
+        // initialize Dialog
         Stage chooserStage = new Stage(StageStyle.UTILITY);
         File selectedDirectory = chooser.showDialog(chooserStage);
-
+        
+        // sets selected directory as root and adds it to history list
         setRoot(selectedDirectory);  
         historyList.add(selectedDirectory);        
     }
     
     
-    // open dialog that shows history of previously selected Paths
+    /**
+     * Opens dialog that shows history of previously selected Paths
+     * and let user choose one
+     */
     private void showHistoryView(){
+        // create new Stage
         Stage dialogStage = new Stage(StageStyle.UTILITY);
         dialogStage.setTitle("Select Base Directory");
+        
         URL location = getClass().getResource("/de/bht/fpa/mail/s791881/view/HistoryView.fxml");
-
+        
+        // creates FXML loader to load HistoryView
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
 
         fxmlLoader.setController(new HistoryViewController(this));
-
+        
+        // load view and set scene in stage
         try {
             Pane myPane = (Pane) fxmlLoader.load();
             Scene myScene = new Scene(myPane);
