@@ -10,17 +10,18 @@ import java.util.List;
  */
 public class Folder extends Component {
 
-    private boolean expandable;
-    private ArrayList<Component> content;
-    private List<Email> emails;
+    private final boolean expandable;
+    private final ArrayList<Component> content;
+    private final List<Email> emails;
 
     public Folder(File path, boolean expandable) {
         super(path);
         this.expandable = expandable;
-        content = new ArrayList<Component>();
-        emails = new ArrayList<Email>();
+        content = new ArrayList<>();
+        emails = new ArrayList<>();
     }
 
+    @Override
     public boolean isExpandable() {
         return expandable;
     }
