@@ -22,6 +22,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -44,11 +46,9 @@ public class MainViewController implements Initializable {
     @FXML //  fx:id="treeView"
     private TreeView<Component> treeView; 
     
-    @FXML // fx:id="menuAccount"
-    private MenuItem menuOpen;
-    
-    @FXML // fx:id="menuHistory"
-    private MenuItem menuHistory;
+    @FXML // fx:id="menuBar" 
+    private MenuBar menuBar;
+
     
     
     
@@ -95,6 +95,7 @@ public class MainViewController implements Initializable {
         
         setRoot(new File(ROOT_PATH));
         
+        
         // add changeListener
         treeView.getSelectionModel().selectedItemProperty().addListener( 
                 (ChangeListener) (obsValue, oldState, newState) -> changeSelection(newState) );
@@ -104,10 +105,13 @@ public class MainViewController implements Initializable {
      * Iniate Menu and sets handler for menu items
      */
     private void configureMenue(){  
+        for(Menu menu : menuBar.getMenus()){
+            for(MenuItem item : menu.getItems()){
+                // sets handler for menu items
+                item.setOnAction((ActionEvent event) -> handleMenu(event));
+            }
+        }
         
-        // sets handler for menu items
-        menuOpen.setOnAction((ActionEvent event) -> handleMenu(event));
-        menuHistory.setOnAction((ActionEvent event) -> handleMenu(event));
     }
 
     
@@ -239,15 +243,16 @@ public class MainViewController implements Initializable {
      */
     private void handleMenu(ActionEvent event){
         // get source of event
-        MenuItem source = (MenuItem)event.getSource();  
+        MenuItem source = (MenuItem)event.getSource(); 
         
-        // call method depending on selected menu item
-        if (source == menuOpen) {
-            choosePathView();        
-        }        
-        else if (source == menuHistory) {            
-            showHistoryView();     
-        }  
+        switch(source.getId()){
+            case("menuOpen"):
+                choosePathView();
+                break;
+            case("menuHistory"):
+                showHistoryView();
+                break;
+        }
     }
     
     

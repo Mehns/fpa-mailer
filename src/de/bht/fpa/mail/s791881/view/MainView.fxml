@@ -26,7 +26,7 @@
                   </SplitPane>
               </items>
             </SplitPane>
-            <MenuBar prefHeight="25.0" prefWidth="900.0">
+            <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="900.0">
               <menus>
                 <Menu fx:id="menuAccount" mnemonicParsing="false" text="Account" />
                 <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
