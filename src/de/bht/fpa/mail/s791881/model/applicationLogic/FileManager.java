@@ -27,7 +27,7 @@ public class FileManager implements FolderManagerIF {
      */
     public FileManager(final File file) {
         // check if file is empty
-        boolean isExpandable = (file.listFiles().length > 0);
+        boolean isExpandable = !(file.listFiles()==null);
                
         topFolder = new Folder (file,isExpandable);
         if(isExpandable){
@@ -65,7 +65,7 @@ public class FileManager implements FolderManagerIF {
   
     private boolean containsDirectory(File file){
         File[] content = file.listFiles();
-        if (content.length > 0) {
+        if (content != null) {
             for(File currentFile: content){
                 if (currentFile.isDirectory()) {
                     return true;

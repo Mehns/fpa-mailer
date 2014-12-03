@@ -54,7 +54,7 @@ public class MainViewController implements Initializable {
     
     /* =================== Other Variables ================ */
     
-    private final String ROOT_PATH = "../FPA Mailer/Account";
+    private final String ROOT_PATH = System.getProperty("user.home");
 
     // Icons
     private final Image ICON_FOLDER_COLLAPSED;
@@ -178,7 +178,7 @@ public class MainViewController implements Initializable {
     private void changeSelection(Object newState){
         
         // get new selected Treeitem and it's folder
-        TreeItem<Component> selectedItem = (TreeItem<Component>) newState;      
+        TreeItem<Component> selectedItem = treeView.getSelectionModel().getSelectedItem();
         Folder folder = (Folder) selectedItem.getValue();  
          
         // prints Email content
@@ -268,6 +268,9 @@ public class MainViewController implements Initializable {
         Stage chooserStage = new Stage(StageStyle.UTILITY);
         File selectedDirectory = chooser.showDialog(chooserStage);
         
+        if(selectedDirectory == null){
+            return;
+        }
         // sets selected directory as root and adds it to history list
         setRoot(selectedDirectory);  
         historyList.add(selectedDirectory);        

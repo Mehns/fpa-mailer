@@ -34,7 +34,7 @@ public class XmlEMailManager implements EmailManagerIF{
             
             /* if folder contains xml files, check if xml format is valid 
                 and convert them to Email objects */
-            if(content.length > 0){
+            if(content != null){
                 for(File item: content){
                     
                     if (isValid(item)) {
