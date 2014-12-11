@@ -59,11 +59,11 @@
                                     <Font name="System Bold" size="12.0" />
                                  </font>
                               </Label>
-                              <TextArea fx:id="messageTextfield" layoutX="15.0" layoutY="129.0" prefHeight="144.0" prefWidth="568.0" AnchorPane.rightAnchor="15.0" />
-                              <Text fx:id="senderText" layoutX="94.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.rightAnchor="15.0" />
-                              <Text fx:id="subjectText" layoutX="93.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.rightAnchor="15.0" />
-                              <Text fx:id="receivedText" layoutX="93.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.rightAnchor="15.0" />
-                              <Text fx:id="receiverText" layoutX="93.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.rightAnchor="15.0" />
+                              <TextArea fx:id="messageTextfield" layoutX="15.0" layoutY="129.0" prefHeight="144.0" prefWidth="568.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                              <Text fx:id="senderText" layoutX="94.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.leftAnchor="93.0" AnchorPane.rightAnchor="15.0" />
+                              <Text fx:id="subjectText" layoutX="93.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.leftAnchor="93.0" AnchorPane.rightAnchor="15.0" />
+                              <Text fx:id="receivedText" layoutX="93.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.leftAnchor="93.0" AnchorPane.rightAnchor="15.0" />
+                              <Text fx:id="receiverText" layoutX="93.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="490.0" AnchorPane.leftAnchor="93.0" AnchorPane.rightAnchor="15.0" />
                            </children></AnchorPane>
                     </items>
                   </SplitPane>

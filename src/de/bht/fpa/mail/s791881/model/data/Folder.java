@@ -43,4 +43,12 @@ public class Folder extends Component {
     public void addEmail(Email message) {
         emails.add(message);
     }
+    
+    @Override
+    public String toString() {
+        String text = this.getName();
+        if(!this.emails.isEmpty())
+            text += " (" +this.emails.size()+ ")";
+        return text;
+    }
  }

@@ -59,7 +59,7 @@ public class MainViewController implements Initializable {
     private MenuBar menuBar;
 
     // table    
-    @FXML private TableView emailTable;
+    @FXML private TableView<Email> emailTable;
     @FXML private TableColumn importanceCol;
     @FXML private TableColumn receivedCol;
     @FXML private TableColumn readCol;
@@ -130,12 +130,11 @@ public class MainViewController implements Initializable {
      */
     private void configureTree(){  
         
-        setRoot(new File(ROOT_PATH));
-        
-        
         // add changeListener
         treeView.getSelectionModel().selectedItemProperty().addListener( 
-                (ChangeListener) (obsValue, oldState, newState) -> selectFolder(newState) );
+                (ChangeListener) (oldValue, oldState, newState) -> selectFolder(newState) );
+        
+        setRoot(new File(ROOT_PATH));
     }
     
     /**
@@ -168,16 +167,18 @@ public class MainViewController implements Initializable {
             new PropertyValueFactory<Email,String>("receiverTo"));
         subjectCol.setCellValueFactory(
             new PropertyValueFactory<Email,String>("subject"));
+        
+        // add ChangeListener => selectEmail()
+        emailTable.getSelectionModel().selectedItemProperty().addListener( 
+                (ChangeListener) (oldValue, oldState, newState) -> selectEmail(newState) );
      
     }
 
     private void configureSearch(){
         
-        // add listener for search text
+        // add listener for search text => search()
         searchField.textProperty().addListener(
                     (observable, oldValue, newValue) -> search(newValue));
-        
-        
     }
 
     
@@ -238,6 +239,15 @@ public class MainViewController implements Initializable {
         searchField.setText("");
         // set search label to default
         searchLabel.setText("(0)"); 
+    }
+    
+    private void resetDetail(){
+        //set Detail Textfields to selected Mail content
+        senderText.setText("");
+        subjectText.setText("");
+        receivedText.setText("");
+        receiverText.setText("");
+        messageTextfield.clear();
     }
     
 
@@ -312,8 +322,13 @@ public class MainViewController implements Initializable {
     private void selectFolder(Object newState){
         
         // get new selected Treeitem and it's folder
-        TreeItem<Component> selectedItem = (TreeItem<Component>) newState;      
+        TreeItem<Component> selectedItem = (TreeItem<Component>) newState;  
+        
+        if(selectedItem == null)
+            return;
+        
         Folder folder = (Folder) selectedItem.getValue();  
+
         
         // load emails into folder
         emailManager.loadEmails(folder);
@@ -327,7 +342,29 @@ public class MainViewController implements Initializable {
         receivedCol.setSortType(TableColumn.SortType.ASCENDING);
         emailTable.getSortOrder().add(receivedCol);
 
-        resetSearch(); //reset search items            
+        resetSearch(); //reset search items   
+        resetDetail(); //reset Textfields of Detail
+        
+        selectedItem.setGraphic(new ImageView(ICON_FOLDER_COLLAPSED));
+
+    }
+    
+    
+    /**
+     * Handles selection of a tableItem
+     * @param newState New Selected item
+     */
+    private void selectEmail(Object newState){  
+        if(newState == null)
+            return;
+        Email email = (Email) newState;
+        
+        //set Detail Textfields to selected Mail content
+        senderText.setText(email.getSender());
+        subjectText.setText(email.getSubject());
+        receivedText.setText(email.getReceived());
+        receiverText.setText(email.getReceiver());        
+        messageTextfield.setText(email.getText());         
     }
     
     
