@@ -6,7 +6,11 @@ import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.List;
 import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -45,6 +49,24 @@ public class XmlEMailManager implements EmailManagerIF{
         }    
     }
     
+    public void saveEmails(File f){
+        //Laut ihrem IF jetzt nur mit der angegebenen File?!?
+        try {
+            //Saved das in den Ordner?
+            File save = new File(f.getPath());
+            
+            for(Email mail:mails){
+                JAXBContext jc = JAXBContext.newInstance(Email.class);
+                Marshaller m = jc.createMarshaller();    
+                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                m.marshal(mail, save);
+            }
+        } catch (JAXBException ex) {
+            System.out.println("SAVE ERROR");
+            return;
+        }
+            
+    }
     /**
      * Reads an email as File and converts it to an Email object
      * 

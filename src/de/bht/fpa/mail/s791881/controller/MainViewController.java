@@ -420,6 +420,9 @@ public class MainViewController implements Initializable {
             case("menuHistory"):
                 showHistoryView();
                 break;
+            case("menuSave"):
+                saveEmails();
+                break;
         }
     }
     
@@ -476,6 +479,29 @@ public class MainViewController implements Initializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }            
+    }
+    /**
+     * Opens dialog choosing a directory to save the actual emails in that directory
+     */
+    private void saveEmails(){
+        // create Directory chooser
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Save E-Mails");
+        
+        // set current directory as inital directory of chooser
+        File currentDirectory = new File(folderManager.getTopFolder().getPath());
+        chooser.setInitialDirectory(currentDirectory);
+        
+        // initialize Dialog
+        Stage chooserStage = new Stage(StageStyle.UTILITY);
+        File selectedDirectory = chooser.showDialog(chooserStage);
+        
+        if(selectedDirectory == null){
+            return;
+        }
+        
+        Folder folder = new Folder(selectedDirectory,false);
+        emailManager.saveEmails(folder);     
     }
     
 }

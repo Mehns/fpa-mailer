@@ -77,6 +77,9 @@
                     <MenuItem fx:id="menuOpen" mnemonicParsing="false" text="Open" />
                   </items>
                   <items>
+                    <MenuItem fx:id="menuSave" mnemonicParsing="false" text="Save" />
+                  </items>
+                  <items>
                     <MenuItem fx:id="menuHistory" mnemonicParsing="false" text="History" />
                   </items>
                 </Menu>
