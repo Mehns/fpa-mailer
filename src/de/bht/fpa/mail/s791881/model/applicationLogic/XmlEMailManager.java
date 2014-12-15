@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -25,8 +27,23 @@ import org.xml.sax.SAXException;
  */
 public class XmlEMailManager implements EmailManagerIF{
     
+    public ObservableList<Email> emailList;
+    private ObservableList<Email> emailListFiltered;
+    
+    
     private final FilenameFilter xmlFilter = new XMLFilter();
     private final File SCHEMA_LOCATION = new File("src/de/bht/fpa/mail/s791881/model/data/email.xsd");
+
+    
+    
+    public XmlEMailManager(Folder folder) {
+        this.emailList = FXCollections.observableArrayList();
+        this.emailListFiltered = FXCollections.observableArrayList();
+    }
+    
+    
+    
+    
 
     @Override
     public void loadEmails(Folder f) {   
@@ -49,24 +66,105 @@ public class XmlEMailManager implements EmailManagerIF{
         }    
     }
     
-    public void saveEmails(File f){
-        //Laut ihrem IF jetzt nur mit der angegebenen File?!?
+    @Override
+    public void saveEmails(File destination){
+
         try {
-            //Saved das in den Ordner?
-            File save = new File(f.getPath());
+            JAXBContext jc = JAXBContext.newInstance(Email.class);
+            Marshaller marshaller = jc.createMarshaller();   
             
-            for(Email mail:mails){
-                JAXBContext jc = JAXBContext.newInstance(Email.class);
-                Marshaller m = jc.createMarshaller();    
-                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                m.marshal(mail, save);
+            System.out.println("Saving emails to " + destination);
+            
+            int count = 0;
+            for(Email email: emailList){
+                count++;
+                File xmlEmail = new File(destination.getAbsolutePath() + "/Email" + count + ".xml");
+                
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                marshaller.marshal(email, xmlEmail);
             }
+            System.out.println("Number of saved Emails: " + count);
         } catch (JAXBException ex) {
             System.out.println("SAVE ERROR");
             return;
         }
             
     }
+
+    @Override
+    public void updateEmailList(Folder folder) {
+        emailList.clear();
+        emailList.addAll(folder.getEmails());
+    }
+
+    
+    
+    @Override
+    public void updateEmailListFiltered(String pattern) {
+        emailListFiltered.clear();
+        for(Email email: emailList){
+            if(matchesPattern(email, pattern))
+                emailListFiltered.add(email);
+        }
+    }
+
+    @Override
+    public ObservableList<Email> getEmailList() {
+        return emailList;
+    }
+
+    
+    @Override
+    public ObservableList<Email> getEmailListFiltered() {
+        return emailListFiltered;
+    }
+    
+    private boolean matchesPattern(Email email, String pattern){
+        
+            // If filter text is empty, display all emails
+            if (pattern == null || pattern.isEmpty()) {
+                return true;
+            }
+            
+            // lower case
+            String lowerCaseFilter = pattern.toLowerCase();
+            
+            // checks all email attributes for input text
+            // Filter matches subject
+            if (email.getSubject().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                return true; 
+            } 
+            // Filter matches sender
+            if (email.getSender().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                return true; 
+            } 
+            // Filter matches text
+            else if (email.getText().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                return true; 
+            }
+            // Filter matches received Date
+            else if (email.getReceived().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                return true; 
+            }
+            // Filter matches sent Date
+            else if (email.getSent().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                return true; 
+            }
+            // Filter matches receiver
+            else if (email.getReceiverListTo().toString().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+                return true; 
+            }
+            
+            return false; // input does not match 
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * Reads an email as File and converts it to an Email object
      * 

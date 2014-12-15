@@ -3,8 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/data/Email.java</file>
+            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/data/Component.java</file>
             <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/controller/MainViewController.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/view/MainView.fxml</file>
+            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/XmlEMailManager.java</file>
+            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/data/Folder.java</file>
         </group>
     </open-files>
 </project-private>

@@ -1,10 +1,8 @@
 
 package de.bht.fpa.mail.s791881.controller;
 
-import de.bht.fpa.mail.s791881.model.applicationLogic.EmailManagerIF;
-import de.bht.fpa.mail.s791881.model.applicationLogic.FileManager;
-import de.bht.fpa.mail.s791881.model.applicationLogic.FolderManagerIF;
-import de.bht.fpa.mail.s791881.model.applicationLogic.XmlEMailManager;
+import de.bht.fpa.mail.s791881.model.applicationLogic.ApplicationLogic;
+import de.bht.fpa.mail.s791881.model.applicationLogic.ApplicationLogicIF;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import de.bht.fpa.mail.s791881.model.data.Component;
 import de.bht.fpa.mail.s791881.model.data.Email;
@@ -17,7 +15,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -84,16 +81,15 @@ public class MainViewController implements Initializable {
     private final String ROOT_PATH = System.getProperty("user.home");
 
     // Icons
-    private final Image ICON_FOLDER_COLLAPSED;
+    private  final Image ICON_FOLDER_COLLAPSED;
     private final Image ICON_FOLDER_OPEN;
     
     // lists 
-    private final ObservableList<File> historyList; //history of selected paths  
+    private final ObservableList<File> historyList;    ; //history of selected paths  
     private final ObservableList<Email> tableData; //Emails in table
-    private final FilteredList<Email> filteredData; //filtered Emails of search
     
-    private FolderManagerIF folderManager;
-    private final EmailManagerIF emailManager;
+    // fassade for application logic
+    private final ApplicationLogicIF manager;
     
     
     /* =================== Constructor ================ */
@@ -101,13 +97,9 @@ public class MainViewController implements Initializable {
     public MainViewController(){
         ICON_FOLDER_COLLAPSED = new Image(getClass().getResourceAsStream("folder-horizontal.png"));
         ICON_FOLDER_OPEN = new Image(getClass().getResourceAsStream("folder-horizontal-open.png"));
-        
-        // initialize lists
-        historyList = FXCollections.observableArrayList();    
+        historyList = FXCollections.observableArrayList(); 
         tableData = FXCollections.observableArrayList();
-        filteredData = new FilteredList<>(tableData, p -> true); //wrap tableData
-        
-        emailManager = new XmlEMailManager();
+        manager = new ApplicationLogic(new File(ROOT_PATH));    
     }
     
     
@@ -171,7 +163,6 @@ public class MainViewController implements Initializable {
         // add ChangeListener => selectEmail()
         emailTable.getSelectionModel().selectedItemProperty().addListener( 
                 (ChangeListener) (oldValue, oldState, newState) -> selectEmail(newState) );
-     
     }
 
     private void configureSearch(){
@@ -189,9 +180,10 @@ public class MainViewController implements Initializable {
      * @param root
      */
     public void setRoot(File root){     
-        folderManager = new FileManager(root);       
+
+        manager.changeDirectory(root);
         
-        TreeItem<Component> rootItem = new TreeItem<> (folderManager.getTopFolder(), new ImageView(ICON_FOLDER_COLLAPSED));   
+        TreeItem<Component> rootItem = new TreeItem<> (manager.getTopFolder(), new ImageView(ICON_FOLDER_COLLAPSED));   
         
         // set handler for expand and collapse a treeItem
         rootItem.addEventHandler(TreeItem.branchExpandedEvent(), event -> expandItem(event));
@@ -199,7 +191,8 @@ public class MainViewController implements Initializable {
 
         treeView.setRoot(rootItem); 
         showFolders(rootItem); 
-        rootItem.setExpanded(true);        
+        rootItem.setExpanded(true); 
+        tableData.clear();
     }
         
     /**
@@ -233,7 +226,6 @@ public class MainViewController implements Initializable {
         return historyList;
     }
     
-    
     private void resetSearch(){
         // set search text to default
         searchField.setText("");
@@ -257,61 +249,17 @@ public class MainViewController implements Initializable {
         
         // cast input
         String searchText = (String) newValue;
+  
+        // filter list
+        ObservableList<Email> filterList = FXCollections.observableArrayList();        
+        filterList.addAll(manager.search(searchText));
         
-        // set filter predicate to search text input
-        // lambda expression with inner class
-        filteredData.setPredicate(email -> {
-        
-            // If filter text is empty, display all emails
-            if (searchText == null || searchText.isEmpty()) {
-                return true;
-            }
-
-            // lower case
-            String lowerCaseFilter = searchText.toLowerCase();
-            
-            // checks all email attributes for input text
-            // Filter matches subject
-            if (email.getSubject().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                return true; 
-            } 
-            // Filter matches sender
-            if (email.getSender().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                return true; 
-            } 
-            // Filter matches text
-            else if (email.getText().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                return true; 
-            }
-            // Filter matches received Date
-            else if (email.getReceived().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                return true; 
-            }
-            // Filter matches sent Date
-            else if (email.getSent().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                return true; 
-            }
-            // Filter matches receiver
-            else if (email.getReceiverListTo().toString().toLowerCase().indexOf(lowerCaseFilter) != -1) {
-                return true; 
-            }
-            
-            return false; // input does not match        
-        });
-        
-        // Wrap the FilteredList in a SortedList. 
-        SortedList<Email> sortedData = new SortedList<>(filteredData);
-
-        // Bind the SortedList comparator to the TableView comparator.
-        sortedData.comparatorProperty().bind(emailTable.comparatorProperty());
-        
-        // set the filtered, sorted list in table
-        emailTable.setItems(filteredData);
+        // set the filtered list in table
+        emailTable.setItems(filterList);
         
         // set label to item count
-        String itemCount = String.valueOf(filteredData.size());
-        searchLabel.setText("("+itemCount+")");       
-        
+        String itemCount = String.valueOf(filterList.size());
+        searchLabel.setText("("+itemCount+")");  
     }
     
     
@@ -328,14 +276,15 @@ public class MainViewController implements Initializable {
             return;
         
         Folder folder = (Folder) selectedItem.getValue();  
-
         
-        // load emails into folder
-        emailManager.loadEmails(folder);
+        // load emails into folder        
+        manager.loadEmails(folder);
         
         // add emails into table list
         tableData.clear();
-        tableData.addAll(folder.getEmails());        
+        tableData.addAll(folder.getEmails());     
+
+        
         emailTable.setItems(tableData);
         
         // set sorting by receiving date
@@ -345,8 +294,8 @@ public class MainViewController implements Initializable {
         resetSearch(); //reset search items   
         resetDetail(); //reset Textfields of Detail
         
+        // force TreeView to update
         selectedItem.setGraphic(new ImageView(ICON_FOLDER_COLLAPSED));
-
     }
     
     
@@ -374,6 +323,7 @@ public class MainViewController implements Initializable {
      * @param event Fired event from tree Item
      */
     private void expandItem(Event event){
+        int focusIndex = treeView.getFocusModel().getFocusedIndex();
         
         // get treeItem that fired event and it's component
         TreeItem<Component> item = (TreeItem<Component>)event.getSource();
@@ -382,12 +332,13 @@ public class MainViewController implements Initializable {
                 
         // load content of Component if hasen't done yet
         if(component.getComponents().isEmpty()){
-            folderManager.loadContent(folder);
+            manager.loadContent(folder);
             showFolders(item); 
         }
         
         // change icon of treeItem
         item.setGraphic(new ImageView(ICON_FOLDER_OPEN));
+        treeView.getFocusModel().focusNext();
     }
     
     
@@ -437,7 +388,7 @@ public class MainViewController implements Initializable {
         chooser.setTitle("Open Basic Directory");
         
         // set current directory as inital directory of chooser
-        File currentDirectory = new File(folderManager.getTopFolder().getPath());
+        File currentDirectory = new File(manager.getTopFolder().getPath());
         chooser.setInitialDirectory(currentDirectory);
 
         // initialize Dialog
@@ -489,7 +440,7 @@ public class MainViewController implements Initializable {
         chooser.setTitle("Save E-Mails");
         
         // set current directory as inital directory of chooser
-        File currentDirectory = new File(folderManager.getTopFolder().getPath());
+        File currentDirectory = new File(manager.getTopFolder().getPath());
         chooser.setInitialDirectory(currentDirectory);
         
         // initialize Dialog
@@ -499,9 +450,8 @@ public class MainViewController implements Initializable {
         if(selectedDirectory == null){
             return;
         }
-        
-        Folder folder = new Folder(selectedDirectory,false);
-        emailManager.saveEmails(folder);     
+
+        manager.saveEmails(selectedDirectory);     
     }
     
 }
