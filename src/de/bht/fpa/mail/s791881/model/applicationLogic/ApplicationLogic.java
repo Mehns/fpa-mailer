@@ -5,9 +5,12 @@
  */
 package de.bht.fpa.mail.s791881.model.applicationLogic;
 
+import de.bht.fpa.mail.s791881.model.data.Account;
+import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountManagerIF;
 import de.bht.fpa.mail.s791881.model.data.Email;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +19,7 @@ import java.util.List;
  */
 public class ApplicationLogic  implements ApplicationLogicIF{
     
+    private final AccountManagerIF accountManager;
     private final EmailManagerIF emailManager;
     private FolderManagerIF folderManager;
 
@@ -23,6 +27,7 @@ public class ApplicationLogic  implements ApplicationLogicIF{
     public ApplicationLogic(File directory) {
         this.folderManager = new FileManager(directory);
         this.emailManager = new XmlEMailManager(folderManager.getTopFolder());
+        this.accountManager = new AccountManager();
     }
     
 
@@ -57,5 +62,44 @@ public class ApplicationLogic  implements ApplicationLogicIF{
     public void saveEmails(File file) {
         emailManager.saveEmails(file);
     }
+
+    @Override
+    public void openAccount(String name) {
+        Account account = accountManager.getAccount(name);
+//        loadContent(account.getTop());
+        changeDirectory(new File(account.getTop().getPath()));
+//        loadContent(getTopFolder());
+//        System.out.println(account.getName());
+//        loadContent(account.getTop());
+    }
+
+    @Override
+    public List<String> getAllAccounts() {
+        List<String> accountNames = new ArrayList<>();
+        List<Account> accounts = accountManager.getAllAccounts();
+        
+        for (Account account : accounts) {
+            accountNames.add(account.getName());
+        }
+        
+        return accountNames;
+    }
+
+    @Override
+    public Account getAccount(String name) {
+        return accountManager.getAccount(name);
+    }
+
+    @Override
+    public boolean saveAccount(Account account) {
+        return accountManager.saveAccount(account);
+    }
+
+    @Override
+    public void updateAccount(Account account) {
+        accountManager.updateAccount(account);
+    }
+    
+    
     
 }

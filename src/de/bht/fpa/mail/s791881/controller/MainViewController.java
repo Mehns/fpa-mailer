@@ -3,6 +3,7 @@ package de.bht.fpa.mail.s791881.controller;
 
 import de.bht.fpa.mail.s791881.model.applicationLogic.ApplicationLogic;
 import de.bht.fpa.mail.s791881.model.applicationLogic.ApplicationLogicIF;
+import de.bht.fpa.mail.s791881.model.data.Account;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import de.bht.fpa.mail.s791881.model.data.Component;
 import de.bht.fpa.mail.s791881.model.data.Email;
@@ -14,7 +15,6 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -52,8 +52,11 @@ public class MainViewController implements Initializable {
     @FXML //  fx:id="treeView"
     private TreeView<Component> treeView; 
     
-    @FXML // fx:id="menuBar" 
-    private MenuBar menuBar;
+    // menu
+    @FXML private MenuBar menuBar;
+    @FXML private Menu menuOpenAccount;
+    @FXML private Menu menuEditAccount;
+    @FXML private MenuItem menuCreateAccount;
 
     // table    
     @FXML private TableView<Email> emailTable;
@@ -81,7 +84,7 @@ public class MainViewController implements Initializable {
     private final String ROOT_PATH = System.getProperty("user.home");
 
     // Icons
-    private  final Image ICON_FOLDER_COLLAPSED;
+    private final Image ICON_FOLDER_COLLAPSED;
     private final Image ICON_FOLDER_OPEN;
     
     // lists 
@@ -133,6 +136,9 @@ public class MainViewController implements Initializable {
      * Iniate Menu and sets handler for menu items
      */
     private void configureMenue(){  
+        
+        loadAccountsToMenu();
+        
         for(Menu menu : menuBar.getMenus()){
             for(MenuItem item : menu.getItems()){
                 // sets handler for menu items
@@ -190,6 +196,23 @@ public class MainViewController implements Initializable {
         rootItem.addEventHandler(TreeItem.branchCollapsedEvent(), event -> collapseItem(event)); 
 
         treeView.setRoot(rootItem); 
+        showFolders(rootItem); 
+        rootItem.setExpanded(true); 
+        tableData.clear();
+    }
+    
+    public void updateRoot(){
+        
+        Folder topFolder = manager.getTopFolder();
+//        manager.loadContent(topFolder);
+        TreeItem<Component> rootItem = new TreeItem<> (topFolder, new ImageView(ICON_FOLDER_COLLAPSED));   
+        
+        // set handler for expand and collapse a treeItem
+        rootItem.addEventHandler(TreeItem.branchExpandedEvent(), event -> expandItem(event));
+        rootItem.addEventHandler(TreeItem.branchCollapsedEvent(), event -> collapseItem(event)); 
+
+        treeView.setRoot(rootItem); 
+        
         showFolders(rootItem); 
         rootItem.setExpanded(true); 
         tableData.clear();
@@ -365,6 +388,10 @@ public class MainViewController implements Initializable {
         MenuItem source = (MenuItem)event.getSource(); 
         
         switch(source.getId()){
+                
+            case("menuCreateAccount"):
+                showCreateAccount();
+                break;
             case("menuOpen"):
                 choosePathView();
                 break;
@@ -375,6 +402,81 @@ public class MainViewController implements Initializable {
                 saveEmails();
                 break;
         }
+    }
+    
+    
+    private void loadAccountsToMenu(){
+               
+        List<String> accounts = manager.getAllAccounts();
+        
+        for (String account : accounts) {
+            // create MenuItems and set Account as data
+            MenuItem accountOpenItem = new MenuItem(account);
+            MenuItem accountEditItem = new MenuItem(account);            
+            accountOpenItem.setUserData(manager.getAccount(account));
+            accountEditItem.setUserData(manager.getAccount(account));
+            
+            // set eventListener
+            accountOpenItem.setOnAction((ActionEvent event) -> openAccount(account));
+            accountEditItem.setOnAction((ActionEvent event) -> showEditAccount(account));
+            
+            menuOpenAccount.getItems().add(accountOpenItem);
+            menuEditAccount.getItems().add(accountEditItem);
+        }
+    }
+    
+    
+    private void openAccount(String account){
+        manager.openAccount(account); 
+        updateRoot();
+    }
+    
+    private void showEditAccount(String account){
+        Account editAccount = manager.getAccount(account);
+        
+        // create new Stage
+        Stage createStage = new Stage(StageStyle.UTILITY);
+        createStage.setTitle("Update Account");        
+        URL location = getClass().getResource("/de/bht/fpa/mail/s791881/view/AccountForm.fxml");
+        
+        // creates FXML loader to load HistoryView
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(location);
+        fxmlLoader.setController(new EditAccountViewController(manager, editAccount));
+        
+        // load view and set scene in stage
+        try {
+            Pane myPane = (Pane) fxmlLoader.load();
+            Scene myScene = new Scene(myPane);
+            createStage.setScene(myScene);
+            createStage.show();
+        } catch (IOException ex) {
+            System.out.println("geht nich");
+            ex.printStackTrace();
+        } 
+    }
+    
+    private void showCreateAccount(){
+        // create new Stage
+        Stage createStage = new Stage(StageStyle.UTILITY);
+        createStage.setTitle("New Account");        
+        URL location = getClass().getResource("/de/bht/fpa/mail/s791881/view/AccountForm.fxml");
+        
+        // creates FXML loader to load HistoryView
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(location);
+        fxmlLoader.setController(new CreateAccountViewController(manager));
+        
+        // load view and set scene in stage
+        try {
+            Pane myPane = (Pane) fxmlLoader.load();
+            Scene myScene = new Scene(myPane);
+            createStage.setScene(myScene);
+            createStage.show();
+        } catch (IOException ex) {
+            System.out.println("geht nich");
+            ex.printStackTrace();
+        } 
     }
     
     
