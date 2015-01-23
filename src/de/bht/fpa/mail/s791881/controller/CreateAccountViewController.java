@@ -33,12 +33,12 @@ public class CreateAccountViewController implements Initializable{
     @FXML private Button accountButtonCancel;
     @FXML private Button accountButtonSubmit;
     
-    private final ApplicationLogicIF manager;
+    private final MainViewController mainViewController;
     
     
     
-    public CreateAccountViewController(ApplicationLogicIF manager){
-        this.manager = manager;
+    public CreateAccountViewController(MainViewController mainViewController){
+        this.mainViewController = mainViewController;
     }
 
     /**
@@ -95,7 +95,8 @@ public class CreateAccountViewController implements Initializable{
         
         newAccount = new Account(name, host, username, password);
                 
-        manager.saveAccount(newAccount);
+        mainViewController.getAppManager().saveAccount(newAccount);
+        mainViewController.updateRoot();
     }
     
     

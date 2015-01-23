@@ -10,7 +10,11 @@ import de.bht.fpa.mail.s791881.model.data.Email;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -60,12 +64,12 @@ public class MainViewController implements Initializable {
 
     // table    
     @FXML private TableView<Email> emailTable;
-    @FXML private TableColumn importanceCol;
-    @FXML private TableColumn receivedCol;
-    @FXML private TableColumn readCol;
-    @FXML private TableColumn senderCol;
-    @FXML private TableColumn recipientsCol;
-    @FXML private TableColumn subjectCol;    
+    @FXML private TableColumn<Email, String> importanceCol;
+    @FXML private TableColumn<Email, String> receivedCol;
+    @FXML private TableColumn<Email, String> readCol;
+    @FXML private TableColumn<Email, String> senderCol;
+    @FXML private TableColumn<Email, String> recipientsCol;
+    @FXML private TableColumn<Email, String> subjectCol;    
     
     // searchfield
     @FXML private TextField searchField;
@@ -153,18 +157,17 @@ public class MainViewController implements Initializable {
     private void configureTable(){
         
         // set Cell Value Factories
-        importanceCol.setCellValueFactory(
-            new PropertyValueFactory<Email,String>("importance"));
-        receivedCol.setCellValueFactory(
-            new PropertyValueFactory<Email,String>("received"));
-        readCol.setCellValueFactory(
-            new PropertyValueFactory<Email,String>("read"));
-        senderCol.setCellValueFactory(
-            new PropertyValueFactory<Email,String>("sender"));
-        recipientsCol.setCellValueFactory(
-            new PropertyValueFactory<Email,String>("receiverTo"));
-        subjectCol.setCellValueFactory(
-            new PropertyValueFactory<Email,String>("subject"));
+        importanceCol.setCellValueFactory(new PropertyValueFactory<>("importance"));
+        receivedCol.setCellValueFactory(new PropertyValueFactory<>("received"));
+        readCol.setCellValueFactory(new PropertyValueFactory<>("read"));
+        senderCol.setCellValueFactory(new PropertyValueFactory<>("sender"));
+        recipientsCol.setCellValueFactory(new PropertyValueFactory<>("receiverTo"));
+        subjectCol.setCellValueFactory(new PropertyValueFactory<>("subject"));
+        
+        /* default column sort by date */
+        receivedCol.setComparator((date1,date2) -> compare(date1,date2));
+        
+        emailTable.getSortOrder().add(receivedCol);
         
         // add ChangeListener => selectEmail()
         emailTable.getSelectionModel().selectedItemProperty().addListener( 
@@ -204,6 +207,7 @@ public class MainViewController implements Initializable {
     public void updateRoot(){
         
         Folder topFolder = manager.getTopFolder();
+
 //        manager.loadContent(topFolder);
         TreeItem<Component> rootItem = new TreeItem<> (topFolder, new ImageView(ICON_FOLDER_COLLAPSED));   
         
@@ -216,6 +220,7 @@ public class MainViewController implements Initializable {
         showFolders(rootItem); 
         rootItem.setExpanded(true); 
         tableData.clear();
+        loadAccountsToMenu();
     }
         
     /**
@@ -225,8 +230,10 @@ public class MainViewController implements Initializable {
      */
     private void showFolders(TreeItem<Component> treeItem){
        
-        List<Component> componentContent = treeItem.getValue().getComponents();        
+        
         treeItem.getChildren().clear();
+        
+        List<Component> componentContent = treeItem.getValue().getComponents();        
         
         for(Component component: componentContent){            
             if (component instanceof Folder) {
@@ -406,20 +413,21 @@ public class MainViewController implements Initializable {
     
     
     private void loadAccountsToMenu(){
-               
-        List<String> accounts = manager.getAllAccounts();
         
-        for (String account : accounts) {
+        menuOpenAccount.getItems().clear();
+        menuEditAccount.getItems().clear();
+        
+        for (String account : manager.getAllAccounts()) {
+
             // create MenuItems and set Account as data
             MenuItem accountOpenItem = new MenuItem(account);
-            MenuItem accountEditItem = new MenuItem(account);            
-            accountOpenItem.setUserData(manager.getAccount(account));
-            accountEditItem.setUserData(manager.getAccount(account));
-            
+            MenuItem accountEditItem = new MenuItem(account);    
+
             // set eventListener
             accountOpenItem.setOnAction((ActionEvent event) -> openAccount(account));
             accountEditItem.setOnAction((ActionEvent event) -> showEditAccount(account));
             
+            // add items to menu
             menuOpenAccount.getItems().add(accountOpenItem);
             menuEditAccount.getItems().add(accountEditItem);
         }
@@ -427,9 +435,11 @@ public class MainViewController implements Initializable {
     
     
     private void openAccount(String account){
+        
         manager.openAccount(account); 
         updateRoot();
     }
+
     
     private void showEditAccount(String account){
         Account editAccount = manager.getAccount(account);
@@ -465,7 +475,7 @@ public class MainViewController implements Initializable {
         // creates FXML loader to load HistoryView
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
-        fxmlLoader.setController(new CreateAccountViewController(manager));
+        fxmlLoader.setController(new CreateAccountViewController(this));
         
         // load view and set scene in stage
         try {
@@ -554,6 +564,26 @@ public class MainViewController implements Initializable {
         }
 
         manager.saveEmails(selectedDirectory);     
+    }
+    
+    /**
+     * Getter for Fassade
+     */
+    public ApplicationLogicIF getAppManager(){
+        return manager;
+    }
+    
+    // converts strings from received column to dates, to be sorted by date
+    private int compare(String s1, String s2) {
+        DateFormat FORMAT = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT, Locale.GERMANY);
+        Date date1 = null;
+        Date date2 = null;
+        try {
+            date1 = FORMAT.parse(s1);
+            date2 = FORMAT.parse(s2);
+        } catch (ParseException ex2) {
+        }
+        return date1.compareTo(date2);
     }
     
 }

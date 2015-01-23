@@ -65,12 +65,7 @@ public class ApplicationLogic  implements ApplicationLogicIF{
 
     @Override
     public void openAccount(String name) {
-        Account account = accountManager.getAccount(name);
-//        loadContent(account.getTop());
-        changeDirectory(new File(account.getTop().getPath()));
-//        loadContent(getTopFolder());
-//        System.out.println(account.getName());
-//        loadContent(account.getTop());
+        changeDirectory(new File(getAccount(name).getTop().getPath()));
     }
 
     @Override
@@ -80,8 +75,7 @@ public class ApplicationLogic  implements ApplicationLogicIF{
         
         for (Account account : accounts) {
             accountNames.add(account.getName());
-        }
-        
+        }        
         return accountNames;
     }
 
@@ -99,7 +93,4 @@ public class ApplicationLogic  implements ApplicationLogicIF{
     public void updateAccount(Account account) {
         accountManager.updateAccount(account);
     }
-    
-    
-    
 }

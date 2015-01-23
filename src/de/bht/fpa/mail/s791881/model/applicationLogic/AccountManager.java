@@ -18,20 +18,22 @@ import java.util.ListIterator;
  */
 public class AccountManager implements AccountManagerIF{
     
-    AccountDAOIF dao = new AccountFileDAO();
+    private final AccountDAOIF dao;
+
+    public AccountManager() {
+        dao = new AccountFileDAO();
+    }
+    
+    
 
     @Override
     public Account getAccount(String name) {
-        Account account = null;
-        ListIterator allAccounts = getAllAccounts().listIterator();
-        
-        while(allAccounts.hasNext()){
-            account = (Account) allAccounts.next();
-            if(name.equals(account.getName())){
+        for(Account account: dao.getAllAccounts()){
+            if (account.getName().equals(name)){
                 return account;
             }
         }
-        return null;        
+        return null;
     }
 
     @Override

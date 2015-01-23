@@ -94,18 +94,13 @@ public class EditAccountViewController implements Initializable{
     }
     
     private void submitForm(){
-        String name,host,username,password;
-        Account updatedAccount;
-        
-        name = account.getName();
-        host = accountHostField.getText();
-        username = accountUsernameField.getText();
-        password = accountPasswordField.getText();
-        
-        updatedAccount = new Account(name, host, username, password);
-                
-        manager.updateAccount(updatedAccount);
-        System.out.println("updated Account "+name);
+
+        account.setHost(accountHostField.getText());
+        account.setUsername(accountUsernameField.getText());
+        account.setPassword(accountPasswordField.getText());
+       
+        manager.updateAccount(account);
+        System.out.println("updated Account "+ account.getName());
     }
     
 }
