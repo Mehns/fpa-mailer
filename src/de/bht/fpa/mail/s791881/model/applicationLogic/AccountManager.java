@@ -6,11 +6,10 @@
 package de.bht.fpa.mail.s791881.model.applicationLogic;
 
 import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountDAOIF;
-import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountFileDAO;
+import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountDBDAO;
 import de.bht.fpa.mail.s791881.model.data.Account;
 import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountManagerIF;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  *
@@ -21,7 +20,7 @@ public class AccountManager implements AccountManagerIF{
     private final AccountDAOIF dao;
 
     public AccountManager() {
-        dao = new AccountFileDAO();
+        dao = new AccountDBDAO();
     }
     
     
