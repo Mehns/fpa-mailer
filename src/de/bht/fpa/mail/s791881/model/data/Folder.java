@@ -4,16 +4,35 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * 
  * @author Simone Strippgen
  */
+
+@Entity
 public class Folder extends Component implements Serializable{
+    
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private final boolean expandable;
-    private final transient ArrayList<Component> content;
-    private final transient List<Email> emails;
+    
+    @Transient
+    private final transient List<Component> content;
+    
+    @Transient
+    private transient List<Email> emails;
+    
+    public Folder(){
+        this.expandable = false;
+        this.content = new ArrayList<>();
+    }
 
     public Folder(File path, boolean expandable) {
         super(path);
@@ -43,6 +62,14 @@ public class Folder extends Component implements Serializable{
 
     public void addEmail(Email message) {
         emails.add(message);
+    }
+    
+    public Long getId(){
+        return id;
+    }
+    
+    public void setId(Long id){
+        this.id = id;
     }
     
     @Override
