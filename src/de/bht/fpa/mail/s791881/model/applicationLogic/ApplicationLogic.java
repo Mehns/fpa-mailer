@@ -5,6 +5,8 @@
  */
 package de.bht.fpa.mail.s791881.model.applicationLogic;
 
+import de.bht.fpa.mail.s791881.model.applicationLogic.xml.XmlEMailManager;
+import de.bht.fpa.mail.s791881.model.applicationLogic.xml.FileManager;
 import de.bht.fpa.mail.s791881.model.data.Account;
 import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountManagerIF;
 import de.bht.fpa.mail.s791881.model.data.Email;
