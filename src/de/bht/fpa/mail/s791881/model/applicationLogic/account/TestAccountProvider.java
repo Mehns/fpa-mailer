@@ -1,5 +1,7 @@
 package de.bht.fpa.mail.s791881.model.applicationLogic.account;
 
+
+
 import de.bht.fpa.mail.s791881.model.data.Account;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
@@ -17,7 +19,7 @@ class TestAccountProvider {
     public static final File TESTDATA_HOME = new File("TestData");
 
     /**
-     * @eturn a list of accounts, with top folder paths which
+     * Returns a list of accounts, with top folder paths which
      * refer to the folder with the testdata.
      */
     public static List<Account> createAccounts() {
@@ -34,6 +36,8 @@ class TestAccountProvider {
         acc = new Account("Anna", "smtp.gmail.com", "anna@gmail.com", "anna");
         folder = new Folder(new File(TESTDATA_HOME, "Anna"), true);
         acc.setTop(folder);
+        accounts.add(acc);
+        acc = new Account("Google-Test", "smtp.gmail.com", "huber.fpa@gmail.com", "ernaHuberFpa"); 
         accounts.add(acc);
         return accounts;
     }
