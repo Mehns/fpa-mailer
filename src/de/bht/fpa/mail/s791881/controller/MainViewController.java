@@ -34,6 +34,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeItem.TreeModificationEvent;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -93,10 +94,10 @@ public class MainViewController implements Initializable {
     
     // lists 
     private final ObservableList<File> historyList;    ; //history of selected paths  
-    private final ObservableList<Email> tableData; //Emails in table
+    private static final ObservableList<Email> tableData = FXCollections.observableArrayList(); //Emails in table
     
     // fassade for application logic
-    private final ApplicationLogicIF manager;
+    private final ApplicationLogicIF MANAGER;
     
     
     /* =================== Constructor ================ */
@@ -105,8 +106,7 @@ public class MainViewController implements Initializable {
         ICON_FOLDER_COLLAPSED = new Image(getClass().getResourceAsStream("folder-horizontal.png"));
         ICON_FOLDER_OPEN = new Image(getClass().getResourceAsStream("folder-horizontal-open.png"));
         historyList = FXCollections.observableArrayList(); 
-        tableData = FXCollections.observableArrayList();
-        manager = new ApplicationLogic(new File(ROOT_PATH));    
+        MANAGER = new ApplicationLogic(new File(ROOT_PATH));    
     }
     
     
@@ -127,13 +127,29 @@ public class MainViewController implements Initializable {
     /**
      * Initiate TreeView and sets handler for selected item
      */
-    private void configureTree(){  
+    public void configureTree(){  
+        Folder topFolder = MANAGER.getTopFolder();
+        if(topFolder == null){
+            return;
+        }
+        MANAGER.loadContent(topFolder);        
+        
+        TreeItem<Component> rootTreeItem = new TreeItem<> (topFolder, new ImageView(ICON_FOLDER_COLLAPSED));   
+        showFolders(rootTreeItem); 
+        if (!rootTreeItem.getChildren().isEmpty()) {
+            rootTreeItem.setExpanded(true);
+        }
+        
+        // set handler for expand and collapse a treeItem
+        rootTreeItem.addEventHandler(TreeItem.branchExpandedEvent(), (TreeModificationEvent<Component> e) -> expandItem(e));
+        rootTreeItem.addEventHandler(TreeItem.branchCollapsedEvent(), (TreeModificationEvent<Component> e) -> collapseItem(e)); 
         
         // add changeListener
         treeView.getSelectionModel().selectedItemProperty().addListener( 
-                (ChangeListener) (oldValue, oldState, newState) -> selectFolder(newState) );
+                (oldValue, oldState, newState) -> selectFolder(newState) );
         
-        setRoot(new File(ROOT_PATH));
+        treeView.setRoot(rootTreeItem); 
+        tableData.clear();
     }
     
     /**
@@ -177,51 +193,12 @@ public class MainViewController implements Initializable {
     private void configureSearch(){
         
         // add listener for search text => search()
-        searchField.textProperty().addListener(
-                    (observable, oldValue, newValue) -> search(newValue));
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> search(newValue));
     }
 
     
     /* =================== Methods ================ */
 
-    /**
-     * Sets the root directory of the explorer and adds event handler
-     * @param root
-     */
-    public void setRoot(File root){     
-
-        manager.changeDirectory(root);
-        
-        TreeItem<Component> rootItem = new TreeItem<> (manager.getTopFolder(), new ImageView(ICON_FOLDER_COLLAPSED));   
-        
-        // set handler for expand and collapse a treeItem
-        rootItem.addEventHandler(TreeItem.branchExpandedEvent(), event -> expandItem(event));
-        rootItem.addEventHandler(TreeItem.branchCollapsedEvent(), event -> collapseItem(event)); 
-
-        treeView.setRoot(rootItem); 
-        showFolders(rootItem); 
-        rootItem.setExpanded(true); 
-        tableData.clear();
-    }
-    
-    public void updateRoot(){
-        
-        Folder topFolder = manager.getTopFolder();
-
-//        manager.loadContent(topFolder);
-        TreeItem<Component> rootItem = new TreeItem<> (topFolder, new ImageView(ICON_FOLDER_COLLAPSED));   
-        
-        // set handler for expand and collapse a treeItem
-        rootItem.addEventHandler(TreeItem.branchExpandedEvent(), event -> expandItem(event));
-        rootItem.addEventHandler(TreeItem.branchCollapsedEvent(), event -> collapseItem(event)); 
-
-        treeView.setRoot(rootItem); 
-        
-        showFolders(rootItem); 
-        rootItem.setExpanded(true); 
-        tableData.clear();
-        loadAccountsToMenu();
-    }
         
     /**
      * Reads all components from the given TreeItem and creates their TreeItems
@@ -275,23 +252,18 @@ public class MainViewController implements Initializable {
 
     /* =================== Methods for Event-Handling ================ */
     
-    private void search(Object newValue){
-        
-        // cast input
-        String searchText = (String) newValue;
-  
-        // filter list
-        ObservableList<Email> filterList = FXCollections.observableArrayList();        
-        filterList.addAll(manager.search(searchText));
-        
-        // set the filtered list in table
-        emailTable.setItems(filterList);
-        
-        // set label to item count
-        String itemCount = String.valueOf(filterList.size());
-        searchLabel.setText("("+itemCount+")");  
-    }
     
+        private void search(String input){
+            List<Email> list = MANAGER.search(tableData,input);
+            
+            ObservableList fill = FXCollections.observableArrayList();
+            for(Email e: list){
+            fill.add(e);
+            }
+            emailTable.setItems(fill);
+            searchLabel.setText("(" + fill.size() + ")");
+    }
+  
     
     /**
      * Handles selection of a treeItem
@@ -300,15 +272,20 @@ public class MainViewController implements Initializable {
     private void selectFolder(Object newState){
         
         // get new selected Treeitem and it's folder
+
         TreeItem<Component> selectedItem = (TreeItem<Component>) newState;  
         
         if(selectedItem == null)
             return;
+
+        if (!(selectedItem.getValue() instanceof Folder)) {
+            return;
+        }
         
         Folder folder = (Folder) selectedItem.getValue();  
         
         // load emails into folder        
-        manager.loadEmails(folder);
+        MANAGER.loadEmails(folder);
         
         // add emails into table list
         tableData.clear();
@@ -362,7 +339,7 @@ public class MainViewController implements Initializable {
                 
         // load content of Component if hasen't done yet
         if(component.getComponents().isEmpty()){
-            manager.loadContent(folder);
+            MANAGER.loadContent(folder);
             showFolders(item); 
         }
         
@@ -417,7 +394,7 @@ public class MainViewController implements Initializable {
         menuOpenAccount.getItems().clear();
         menuEditAccount.getItems().clear();
         
-        for (String account : manager.getAllAccounts()) {
+        for (String account : MANAGER.getAllAccounts()) {
 
             // create MenuItems and set Account as data
             MenuItem accountOpenItem = new MenuItem(account);
@@ -434,15 +411,14 @@ public class MainViewController implements Initializable {
     }
     
     
-    private void openAccount(String account){
-        
-        manager.openAccount(account); 
-        updateRoot();
+    private void openAccount(String account){        
+        MANAGER.openAccount(account); 
+        configureTree();
     }
 
     
     private void showEditAccount(String account){
-        Account editAccount = manager.getAccount(account);
+        Account editAccount = MANAGER.getAccount(account);
         
         // create new Stage
         Stage createStage = new Stage(StageStyle.UTILITY);
@@ -452,7 +428,7 @@ public class MainViewController implements Initializable {
         // creates FXML loader to load HistoryView
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
-        fxmlLoader.setController(new EditAccountViewController(manager, editAccount));
+        fxmlLoader.setController(new EditAccountViewController(MANAGER, editAccount));
         
         // load view and set scene in stage
         try {
@@ -500,7 +476,7 @@ public class MainViewController implements Initializable {
         chooser.setTitle("Open Basic Directory");
         
         // set current directory as inital directory of chooser
-        File currentDirectory = new File(manager.getTopFolder().getPath());
+        File currentDirectory = new File(ROOT_PATH);
         chooser.setInitialDirectory(currentDirectory);
 
         // initialize Dialog
@@ -511,7 +487,8 @@ public class MainViewController implements Initializable {
             return;
         }
         // sets selected directory as root and adds it to history list
-        setRoot(selectedDirectory);  
+        MANAGER.changeDirectory(selectedDirectory);
+        configureTree();
         historyList.add(selectedDirectory);        
     }
     
@@ -552,25 +529,23 @@ public class MainViewController implements Initializable {
         chooser.setTitle("Save E-Mails");
         
         // set current directory as inital directory of chooser
-        File currentDirectory = new File(manager.getTopFolder().getPath());
+        File currentDirectory = new File(ROOT_PATH);
         chooser.setInitialDirectory(currentDirectory);
         
         // initialize Dialog
         Stage chooserStage = new Stage(StageStyle.UTILITY);
         File selectedDirectory = chooser.showDialog(chooserStage);
         
-        if(selectedDirectory == null){
-            return;
+        if(selectedDirectory != null){
+            MANAGER.saveEmails(tableData, selectedDirectory);     
         }
-
-        manager.saveEmails(selectedDirectory);     
     }
     
     /**
      * Getter for Fassade
      */
     public ApplicationLogicIF getAppManager(){
-        return manager;
+        return MANAGER;
     }
     
     // converts strings from received column to dates, to be sorted by date

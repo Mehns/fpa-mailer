@@ -27,24 +27,11 @@ import org.xml.sax.SAXException;
  * @author Christian Mehns
  */
 public class XmlEMailManager implements EmailManagerIF{
-    
-    public ObservableList<Email> emailList;
-    private ObservableList<Email> emailListFiltered;
-    
-    
+       
     private final FilenameFilter xmlFilter = new XMLFilter();
     private final File SCHEMA_LOCATION = new File("src/de/bht/fpa/mail/s791881/model/data/email.xsd");
-
-    
-    
-    public XmlEMailManager(Folder folder) {
-        this.emailList = FXCollections.observableArrayList();
-        this.emailListFiltered = FXCollections.observableArrayList();
-    }
-    
-    
-    
-    
+   
+  
 
     @Override
     public void loadEmails(Folder f) {   
@@ -68,7 +55,7 @@ public class XmlEMailManager implements EmailManagerIF{
     }
     
     @Override
-    public void saveEmails(File destination){
+    public void saveEmails(ObservableList<Email> emailList, File destination){
 
         try {
             JAXBContext jc = JAXBContext.newInstance(Email.class);
@@ -87,37 +74,20 @@ public class XmlEMailManager implements EmailManagerIF{
             System.out.println("Number of saved Emails: " + count);
         } catch (JAXBException ex) {
             System.out.println("SAVE ERROR");
-            return;
         }
-            
     }
 
-    @Override
-    public void updateEmailList(Folder folder) {
-        emailList.clear();
-        emailList.addAll(folder.getEmails());
-    }
 
-    
-    
+   
     @Override
-    public void updateEmailListFiltered(String pattern) {
-        emailListFiltered.clear();
+    public ObservableList filterEmails(ObservableList<Email> emailList, String pattern) {
+        ObservableList filtered = FXCollections.observableArrayList();
         for(Email email: emailList){
-            if(matchesPattern(email, pattern))
-                emailListFiltered.add(email);
+            if(matchesPattern(email,pattern)){
+                filtered.add(email);
+            }
         }
-    }
-
-    @Override
-    public ObservableList<Email> getEmailList() {
-        return emailList;
-    }
-
-    
-    @Override
-    public ObservableList<Email> getEmailListFiltered() {
-        return emailListFiltered;
+        return filtered;
     }
     
     private boolean matchesPattern(Email email, String pattern){
@@ -158,11 +128,6 @@ public class XmlEMailManager implements EmailManagerIF{
             
             return false; // input does not match 
     }
-    
-    
-    
-    
-    
     
     
     

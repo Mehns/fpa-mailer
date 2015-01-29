@@ -19,19 +19,20 @@ public interface EmailManagerIF{
      *          directory should be loaded
      */
     void loadEmails(Folder f);     
+    
     /**
-     * Saves actual emails in the directory path of a folder
-     * into the folder.
-     * @param f the folder into which the Emails of the corresponding 
-     *          directory should be saved
-     */
-    void saveEmails(File f);
+    * saves xml files in given file
+    * @param emailList to save
+    * @param file where emails should be saved
+    */
+    void saveEmails(ObservableList<Email> emailList, File file);
     
-    public void updateEmailList(Folder folder);
-    
-    public void updateEmailListFiltered(String pattern);
-    
-    public ObservableList<Email> getEmailList();
-    
-    public ObservableList<Email> getEmailListFiltered();
+    /**
+    * filters all emails into list
+    * @param emailList to search
+    * @param pattern to search for
+    * @return filtered list
+    */
+    ObservableList filterEmails(ObservableList<Email> emailList, String pattern);
+
 }

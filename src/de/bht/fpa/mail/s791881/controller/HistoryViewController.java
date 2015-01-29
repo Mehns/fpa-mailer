@@ -74,7 +74,9 @@ public class HistoryViewController implements Initializable {
     private void getSelection(){
         // get selected file and set it as root in the mainView
         File selectedFile = (File) dialogListView.getSelectionModel().getSelectedItem();
-        mainViewController.setRoot(selectedFile);        
+        
+        mainViewController.getAppManager().changeDirectory(selectedFile);
+        mainViewController.configureTree();
         closeWindow();
     }
     

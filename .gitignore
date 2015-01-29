@@ -1,5 +1,7 @@
 # NetBeans specific #
 nbproject/private/*
+nbproject/private/private.properties
+nbproject/project.properties
 private.properties
 private.xml
 build/

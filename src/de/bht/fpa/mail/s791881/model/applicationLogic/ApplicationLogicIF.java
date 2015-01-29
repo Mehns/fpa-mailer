@@ -5,6 +5,7 @@ import de.bht.fpa.mail.s791881.model.data.Email;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
 import java.util.List;
+import javafx.collections.ObservableList;
 
 /**
  * This Interface defines the methods which are needed 
@@ -30,12 +31,13 @@ public interface ApplicationLogicIF {
     void loadContent(Folder folder);
 
     /**
-     * Searches for all emails in the selected folder that contain the 
-     * given pattern.
-     * @return a list of all emails that contain the pattern
-     * @param pattern contains a string for comparison with email content
-     */
-    List<Email> search(String pattern);
+    * Searches for all emails in the selected folder that contain the
+    * given pattern.
+    * @param emailList eimails to be compared
+    * @param pattern contains a string for comparison with email content
+    * @return a list of all emails that contain the pattern
+    */
+    List<Email> search(ObservableList<Email> emailList, String pattern);
 
     /**
      * Loads all emails in the directory path of the given folder
@@ -54,12 +56,13 @@ public interface ApplicationLogicIF {
     void changeDirectory(File file);
 
     /**
-     * Saves the email objects of the selected folder into the given
-     * directory.
-     * @param file  the path to the directory in which the email objects
-     *              should be saved.
-     */
-    void saveEmails(File file);
+    * Saves the email objects of the selected folder into the given
+    * directory.
+    * @param emailList emails to be saved
+    * @param file the path to the directory in which the email objects
+    * should be saved.
+    */
+    void saveEmails(ObservableList<Email> emailList, File file);
     
         // NEU in Uebung 8
     

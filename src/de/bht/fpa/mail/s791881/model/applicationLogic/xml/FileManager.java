@@ -31,9 +31,6 @@ public class FileManager implements FolderManagerIF {
         boolean isExpandable = !(file.listFiles()==null);
                
         topFolder = new Folder (file,isExpandable);
-        if(isExpandable){
-            loadContent(topFolder);
-        }
     }
     
     /**
@@ -48,10 +45,7 @@ public class FileManager implements FolderManagerIF {
         File root = new File(f.getPath());        
         File[] content = root.listFiles();
         
-        //creates Files or Folders and adds them to component,
-        //checks of directory is expandable
-        
-        
+       
         for(File item: content){
             if(item.isDirectory()){
                 f.addComponent(new Folder(item, containsDirectory(item)));

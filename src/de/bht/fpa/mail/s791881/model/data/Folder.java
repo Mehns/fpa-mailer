@@ -24,14 +24,15 @@ public class Folder extends Component implements Serializable{
     private boolean expandable;
     
     @Transient
-    private final transient List<Component> content;
+    private final transient ArrayList<Component> content;
     
     @Transient
-    private transient List<Email> emails;
+    private transient ArrayList<Email> emails;
     
     public Folder(){
         this.expandable = false;
         this.content = new ArrayList<>();
+        emails = new ArrayList<Email>();
     }
 
     public Folder(File path, boolean expandable) {

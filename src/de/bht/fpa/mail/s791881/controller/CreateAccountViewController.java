@@ -96,7 +96,7 @@ public class CreateAccountViewController implements Initializable{
         newAccount = new Account(name, host, username, password);
                 
         mainViewController.getAppManager().saveAccount(newAccount);
-        mainViewController.updateRoot();
+        mainViewController.configureTree();
     }
     
     
