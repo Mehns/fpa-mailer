@@ -21,7 +21,7 @@ public class Folder extends Component implements Serializable{
     @GeneratedValue
     private Long id;
 
-    private final boolean expandable;
+    private boolean expandable;
     
     @Transient
     private final transient List<Component> content;
@@ -44,6 +44,10 @@ public class Folder extends Component implements Serializable{
     @Override
     public boolean isExpandable() {
         return expandable;
+    }
+    
+    public void setExpandable(boolean isExpandable){
+        this.expandable = isExpandable;
     }
 
     @Override
@@ -71,7 +75,7 @@ public class Folder extends Component implements Serializable{
     public void setId(Long id){
         this.id = id;
     }
-    
+        
     @Override
     public String toString() {
         String text = this.getName();
