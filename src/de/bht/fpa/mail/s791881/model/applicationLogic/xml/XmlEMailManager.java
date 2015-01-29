@@ -2,7 +2,6 @@
 package de.bht.fpa.mail.s791881.model.applicationLogic.xml;
 
 import de.bht.fpa.mail.s791881.model.applicationLogic.EmailManagerIF;
-import de.bht.fpa.mail.s791881.model.applicationLogic.XMLFilter;
 import de.bht.fpa.mail.s791881.model.data.Email;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
