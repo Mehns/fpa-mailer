@@ -10,7 +10,12 @@ import de.bht.fpa.mail.s791881.model.data.Account;
 import de.bht.fpa.mail.s791881.model.data.Email;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.ObservableList;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Store;
 
 /**
  *
@@ -25,6 +30,26 @@ public class IMapEmailManager implements EmailManagerIF{
     }
     @Override
     public void loadEmails(Folder f) {
+                Store store = IMapConnectionHelper.connect(account);
+//        
+//        try {            
+////            if(imapFolder.getMessageCount()==0){
+////                return;
+////            };
+//            Message[] messages = imapFolder.getMessages();
+//            
+//            for(int i=0; i < messages.length; i++){
+//                
+//            }
+//            
+//            
+//            topFolder.setName(imapFolder.getFullName());
+//            store.close();
+//            
+//        } catch (MessagingException e) {
+//            Logger.getLogger(IMapFolderManager.class.getName()).log(Level.SEVERE, null, e);            
+//        }
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

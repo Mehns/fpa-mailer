@@ -5,10 +5,11 @@
  */
 package de.bht.fpa.mail.s791881.model.applicationLogic;
 
-import de.bht.fpa.mail.s791881.model.applicationLogic.xml.XmlEMailManager;
 import de.bht.fpa.mail.s791881.model.applicationLogic.xml.FileManager;
 import de.bht.fpa.mail.s791881.model.data.Account;
 import de.bht.fpa.mail.s791881.model.applicationLogic.account.AccountManagerIF;
+import de.bht.fpa.mail.s791881.model.applicationLogic.imap.IMapEmailManager;
+import de.bht.fpa.mail.s791881.model.applicationLogic.imap.IMapFolderManager;
 import de.bht.fpa.mail.s791881.model.data.Email;
 import de.bht.fpa.mail.s791881.model.data.Folder;
 import java.io.File;
@@ -27,8 +28,9 @@ public class ApplicationLogic  implements ApplicationLogicIF{
 
     
     public ApplicationLogic(File directory) {
-        this.folderManager = new FileManager(directory);
-        this.emailManager = new XmlEMailManager(folderManager.getTopFolder());
+        Account acc = new Account();
+        this.folderManager = new IMapFolderManager(acc);
+        this.emailManager = new IMapEmailManager(acc);
         this.accountManager = new AccountManager();
     }
     
