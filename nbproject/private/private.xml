@@ -2,17 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/ApplicationLogic.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/imap/IMapFolder.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/imap/IMapEmailConverter.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/controller/MainViewController.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/imap/IMapFolderManager.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/xml/FileManager.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/xml/XmlEMailManager.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/data/Folder.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/imap/IMapEmailManager.java</file>
-            <file>file:/K:/MedienInformatik/FPA/Workspace/FPA%20Mailer/fpa-mailer/src/de/bht/fpa/mail/s791881/model/applicationLogic/AccountManager.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

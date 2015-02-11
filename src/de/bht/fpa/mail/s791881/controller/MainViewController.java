@@ -389,7 +389,7 @@ public class MainViewController implements Initializable {
     }
     
     
-    private void loadAccountsToMenu(){
+    public void loadAccountsToMenu(){
         
         menuOpenAccount.getItems().clear();
         menuEditAccount.getItems().clear();
